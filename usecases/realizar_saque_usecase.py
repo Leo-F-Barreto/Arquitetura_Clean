@@ -1,21 +1,19 @@
-from application.interfaces import IContaRepository
-
+from domain.interfaces import IContaRepository
 
 class RealizarSaqueUseCase:
-    def __init__(self, repository: IContaRepository):
-        self.repository = repository
+    def __init__(self, repo: IContaRepository):
+        self.repo = repo
 
     def executar(self, numero_conta: str, valor: float):
-        conta = self.repository.buscar_por_numero(numero_conta)
+        conta = self.repo.buscar_por_numero(numero_conta)
         if not conta:
             raise LookupError("Conta não encontrada.")
         if valor <= 0:
             raise ValueError("Valor deve ser maior que zero.")
         if valor > conta.saldo:
             raise ValueError("Saldo insuficiente.")
-
+        
         conta.saldo -= valor
         conta.historico.append(f"Saque realizado: -R$ {valor:.2f}")
-
-        self.repository.salvar(conta)
+        self.repo.salvar(conta)
         return conta
